@@ -1,0 +1,41 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchuserrolebinding_types.go{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchuserrolebinding_types.go {
+-const OpensearchUserRoleBindingPending: OpensearchUserRoleBindingState
+-const OpensearchUserRoleBindingStateCreated: OpensearchUserRoleBindingState
+-const OpensearchUserRoleBindingStateError: OpensearchUserRoleBindingState
+
+-init()
+}
+class OpensearchUserRoleBindingSpec {
++OpensearchRef: LocalObjectReference
++Roles: []string
++Users: []string
+
+}
+class OpensearchUserRoleBindingStatus {
++State: OpensearchUserRoleBindingState
++Reason: string
++ManagedCluster: *UID
++ProvisionedRoles: []string
++ProvisionedUsers: []string
+
+}
+class OpensearchUserRoleBinding {
++: TypeMeta
++: ObjectMeta
++Spec: OpensearchUserRoleBindingSpec
++Status: OpensearchUserRoleBindingStatus
+
+}
+class OpensearchUserRoleBindingList {
++: TypeMeta
++: ListMeta
++Items: []OpensearchUserRoleBinding
+
+}
+}
+OpensearchUserRoleBinding --> OpensearchUserRoleBindingSpec
+OpensearchUserRoleBinding --> OpensearchUserRoleBindingStatus
+
+@enduml

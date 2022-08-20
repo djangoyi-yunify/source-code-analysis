@@ -1,0 +1,204 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearch_types.go{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearch_types.go {
+-const PhaseRunning: STRING
+-const PhasePending: STRING
+
+-init()
+}
+class NodePool {
++Component: string
++Replicas: int32
++DiskSize: string
++Resources: ResourceRequirements
++Jvm: string
++Roles: []string
++Tolerations: []Toleration
++NodeSelector: map[string]string
++Affinity: *Affinity
++Persistence: *PersistenceConfig
++AdditionalConfig: map[string]string
++Labels: map[string]string
++Env: []EnvVar
+
+}
+class PersistenceConfig {
++: PersistenceSource
+
+}
+class TlsConfigHttp {
++Generate: bool
++: TlsCertificateConfig
+
+}
+class ImageSpec {
++Image: *string
++ImagePullPolicy: *PullPolicy
++ImagePullSecrets: []LocalObjectReference
++GetImagePullPolicy(): PullPolicy
++GetImage(): string
+}
+class AdditionalVolume {
++Name: string
++Path: string
++Secret: *SecretVolumeSource
++ConfigMap: *ConfigMapVolumeSource
++RestartPods: bool
+
+}
+class ClusterSpec {
++General: GeneralConfig
++ConfMgmt: ConfMgmt
++Bootstrap: BootstrapConfig
++Dashboards: DashboardsConfig
++Security: *Security
++NodePools: []NodePool
+
+}
+class ClusterStatus {
++Phase: string
++ComponentsStatus: []ComponentStatus
++Version: string
++Initialized: bool
+
+}
+class ComponentStatus {
++Component: string
++Status: string
++Description: string
+
+}
+class OpenSearchClusterList {
++: TypeMeta
++: ListMeta
++Items: []OpenSearchCluster
+
+}
+class PVCSource {
++StorageClassName: string
++AccessModes: []PersistentVolumeAccessMode
+
+}
+class ConfMgmt {
++AutoScaler: bool
++Monitoring: bool
++VerUpdate: bool
++SmartScaler: bool
+
+}
+class BootstrapConfig {
++Resources: ResourceRequirements
++Tolerations: []Toleration
++NodeSelector: map[string]string
++Affinity: *Affinity
++Jvm: string
+
+}
+class DashboardsConfig {
++: *ImageSpec
++Enable: bool
++Resources: ResourceRequirements
++Replicas: int32
++Tls: *DashboardsTlsConfig
++Version: string
++AdditionalConfig: map[string]string
++OpensearchCredentialsSecret: LocalObjectReference
++Env: []EnvVar
++AdditionalVolumes: []AdditionalVolume
+
+}
+class Security {
++Tls: *TlsConfig
++Config: *SecurityConfig
+
+}
+class TlsConfigTransport {
++Generate: bool
++PerNode: bool
++: TlsCertificateConfig
++NodesDn: []string
++AdminDn: []string
+
+}
+class SecurityConfig {
++SecurityconfigSecret: LocalObjectReference
++AdminSecret: LocalObjectReference
++AdminCredentialsSecret: LocalObjectReference
+
+}
+class OpenSearchCluster {
++: TypeMeta
++: ObjectMeta
++Spec: ClusterSpec
++Status: ClusterStatus
+
+}
+class DashboardsTlsConfig {
++Enable: bool
++Generate: bool
++: TlsCertificateConfig
+
+}
+class TlsConfig {
++Transport: *TlsConfigTransport
++Http: *TlsConfigHttp
+
+}
+class TlsCertificateConfig {
++Secret: LocalObjectReference
++CaSecret: LocalObjectReference
+
+}
+class TlsSecret {
++SecretName: string
++Key: *string
+
+}
+class GeneralConfig {
++: *ImageSpec
++HttpPort: int32
++Vendor: string
++Version: string
++ServiceAccount: string
++ServiceName: string
++SetVMMaxMapCount: bool
++DefaultRepo: *string
++AdditionalConfig: map[string]string
++DrainDataNodes: bool
++PluginsList: []string
++AdditionalVolumes: []AdditionalVolume
+
+}
+class PersistenceSource {
++PVC: *PVCSource
++EmptyDir: *EmptyDirVolumeSource
++HostPath: *HostPathVolumeSource
+
+}
+}
+NodePool --> PersistenceConfig
+PersistenceConfig --> PersistenceSource
+TlsConfig --> TlsConfigHttp
+TlsConfigHttp --> TlsCertificateConfig
+DashboardsConfig --> ImageSpec
+DashboardsConfig --> AdditionalVolume
+GeneralConfig --> ImageSpec
+GeneralConfig --> AdditionalVolume
+ClusterSpec --> ConfMgmt
+ClusterSpec --> BootstrapConfig
+ClusterSpec --> DashboardsConfig
+ClusterSpec --> Security
+ClusterSpec --> NodePool
+OpenSearchCluster --> ClusterSpec
+ClusterSpec --> GeneralConfig
+OpenSearchCluster --> ClusterStatus
+ClusterStatus --> ComponentStatus
+PersistenceSource --> PVCSource
+DashboardsConfig --> DashboardsTlsConfig
+Security --> SecurityConfig
+Security --> TlsConfig
+TlsConfig --> TlsConfigTransport
+TlsConfigTransport --> TlsCertificateConfig
+DashboardsTlsConfig --> TlsCertificateConfig
+
+@enduml

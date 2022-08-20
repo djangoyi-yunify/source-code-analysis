@@ -1,0 +1,56 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchrole_types.go{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchrole_types.go {
+-const OpensearchRoleStateError: OpensearchRoleState
+-const OpensearchRoleStatePending: OpensearchRoleState
+-const OpensearchRoleStateCreated: OpensearchRoleState
+-const OpensearchRoleIgnored: OpensearchRoleState
+
+-init()
+}
+class IndexPermissionSpec {
++IndexPatterns: []string
++DocumentLevelSecurity: string
++FieldLevelSecurity: []string
++AllowedActions: []string
+
+}
+class OpensearchRole {
++: TypeMeta
++: ObjectMeta
++Spec: OpensearchRoleSpec
++Status: OpensearchRoleStatus
+
+}
+class OpensearchRoleList {
++: TypeMeta
++: ListMeta
++Items: []OpensearchRole
+
+}
+class OpensearchRoleSpec {
++OpensearchRef: LocalObjectReference
++ClusterPermissions: []string
++IndexPermissions: []IndexPermissionSpec
++TenantPermissions: []TenantPermissionsSpec
+
+}
+class TenantPermissionsSpec {
++TenantPatterns: []string
++AllowedActions: []string
+
+}
+class OpensearchRoleStatus {
++State: OpensearchRoleState
++Reason: string
++ExistingRole: *bool
++ManagedCluster: *UID
+
+}
+}
+OpensearchRole --> OpensearchRoleSpec
+OpensearchRoleSpec --> IndexPermissionSpec
+OpensearchRoleSpec --> TenantPermissionsSpec
+OpensearchRole --> OpensearchRoleStatus
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchuser_types.go{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/api/v1/opensearchuser_types.go {
+-const OpensearchUserStateCreated: OpensearchUserState
+-const OpensearchUserStateError: OpensearchUserState
+-const OpensearchUserStatePending: OpensearchUserState
+
+-init()
+}
+class OpensearchUserSpec {
++OpensearchRef: LocalObjectReference
++PasswordFrom: SecretKeySelector
++OpendistroSecurityRoles: []string
++BackendRoles: []string
++Attributes: map[string]string
+
+}
+class OpensearchUserStatus {
++State: OpensearchUserState
++Reason: string
++ManagedCluster: *UID
+
+}
+class OpensearchUser {
++: TypeMeta
++: ObjectMeta
++Spec: OpensearchUserSpec
++Status: OpensearchUserStatus
+
+}
+class OpensearchUserList {
++: TypeMeta
++: ListMeta
++Items: []OpensearchUser
+
+}
+}
+OpensearchUser --> OpensearchUserSpec
+OpensearchUser --> OpensearchUserStatus
+
+@enduml
