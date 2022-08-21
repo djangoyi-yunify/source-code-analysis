@@ -1,0 +1,50 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/controllers/{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/controllers/ {
+-const OpensearchFinalizer: STRING
+
+
+}
+class OpenSearchClusterReconciler {
++: Client
++Scheme: *Scheme
++Recorder: EventRecorder
++Instance: *OpenSearchCluster
++: Logger
++Reconcile(ctx Context, req Request): Result, error
++SetupWithManager(mgr Manager): error
+-deleteExternalResources(ctx Context): Result, error
+-reconcilePhasePending(ctx Context): Result, error
+-reconcilePhaseRunning(ctx Context): Result, error
+}
+class OpensearchRoleReconciler {
++: Client
++Scheme: *Scheme
++Recorder: EventRecorder
++Instance: *OpensearchRole
++: Logger
++Reconcile(ctx Context, req Request): Result, error
++SetupWithManager(mgr Manager): error
+}
+class OpensearchUserReconciler {
++: Client
++Scheme: *Scheme
++Recorder: EventRecorder
++Instance: *OpensearchUser
++: Logger
++Reconcile(ctx Context, req Request): Result, error
++SetupWithManager(mgr Manager): error
+}
+class OpensearchUserRoleBindingReconciler {
++: Client
++Scheme: *Scheme
++Recorder: EventRecorder
++Instance: *OpensearchUserRoleBinding
++: Logger
++Reconcile(ctx Context, req Request): Result, error
++SetupWithManager(mgr Manager): error
+}
+}
+
+
+@enduml

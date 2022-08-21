@@ -1,0 +1,13 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/main.go{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/main.go {
+
+-var scheme: 
+-var setupLog: 
+-init()
+-main()
+}
+}
+
+
+@enduml
