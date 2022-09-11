@@ -1,0 +1,228 @@
+@startuml
+package /codeplace/opensearch-k8s-operator/opensearch-operator/pkg/reconcilers/{
+annotation /codeplace/opensearch-k8s-operator/opensearch-operator/pkg/reconcilers/ {
+-const opensearchAPIError: STRING
+-const statusError: STRING
+-const opensearchError: STRING
+-const opensearchRefMismatch: STRING
+-const opensearchAPIUpdated: STRING
+-const passwordError: STRING
+-const opensearchPending: STRING
+-const opensearchRoleExists: STRING
+-const checksumAnnotation: STRING
+-const CaCertKey: STRING
+-var ErrUnexpectedStatus: 
+-var ErrVersionDowngrade: 
+-var ErrMajorVersionJump: 
++NewClusterReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *ClusterReconciler
++NewConfigurationReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *ConfigurationReconciler
+-generateHash(source []byte): string
++NewDashboardsReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *DashboardsReconciler
++WithOSClientTransport(transport RoundTripper): ReconcilerOption
++WithUpdateStatus(update bool): ReconcilerOption
++NewReconcilerContext(nodepools []NodePool): ReconcilerContext
++UpdateOpensearchStatus(ctx Context, k8sClient Client, instance *OpenSearchCluster, status *ComponentStatus): error
++NewRoleReconciler(ctx Context, client Client, recorder EventRecorder, instance *OpensearchRole, opts ... ReconcilerOption): *RoleReconciler
++NewRollingRestartReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *RollingRestartReconciler
++NewScalerReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *ScalerReconciler
++NewSecurityconfigReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *SecurityconfigReconciler
+-checksum(data map[string][]byte): string, error
++NewTLSReconciler(client Client, ctx Context, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *TLSReconciler
+-mount(interfaceName string, name string, filename string, secretName string, reconcilerContext *ReconcilerContext)
+-mountFolder(interfaceName string, name string, secretName string, reconcilerContext *ReconcilerContext)
++NewUpgradeReconciler(client Client, ctx Context, recorder EventRecorder, reconcilerContext *ReconcilerContext, instance *OpenSearchCluster, opts ... ResourceReconcilerOption): *UpgradeReconciler
++NewUserRoleBindingReconciler(ctx Context, client Client, recorder EventRecorder, instance *OpensearchUserRoleBinding, opts ... ReconcilerOption): *UserRoleBindingReconciler
++NewUserReconciler(ctx Context, client Client, recorder EventRecorder, instance *OpensearchUser, opts ... ReconcilerOption): *UserReconciler
+}
+class ClusterReconciler {
++: Client
++: ResourceReconciler
+-ctx: Context
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
+-logger: Logger
++Reconcile(): Result, error
+-reconcileNodeStatefulSet(nodePool NodePool, username string): *Result, error
++DeleteResources(): Result, error
+}
+class ConfigurationReconciler {
++: ResourceReconciler
++: Client
+-ctx: Context
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
++Reconcile(): Result, error
+-buildConfigMap(data string): *ConfigMap
+-createHashForNodePool(nodePool NodePool, data string, volumeData []byte): *Result, error
++DeleteResources(): Result, error
+}
+class DashboardsReconciler {
++: ResourceReconciler
++: Client
+-ctx: Context
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
+-logger: Logger
+-pki: PKI
++Reconcile(): Result, error
+-handleTls(): []Volume, []VolumeMount, error
+-providedCaCert(secretName string, namespace string): Cert, error
++DeleteResources(): Result, error
+}
+class ReconcilerOptions {
+-osClientTransport: RoundTripper
+-updateStatus: *bool
+-apply(opts ... ReconcilerOption)
+}
+class ReconcilerContext {
++Volumes: []Volume
++VolumeMounts: []VolumeMount
++NodePoolHashes: []NodePoolHash
++DashboardsConfig: map[string]string
++OpenSearchConfig: map[string]string
+-recorder: EventRecorder
+-instance: *OpenSearchCluster
++AddConfig(key string, value string)
++AddDashboardsConfig(key string, value string)
+-fetchNodePoolHash(name string): bool, NodePoolHash
+-replaceNodePoolHash(newConfig NodePoolHash)
+}
+class NodePoolHash {
++Component: string
++ConfigHash: string
+
+}
+class RoleReconciler {
++: Client
++: ReconcilerOptions
+-ctx: Context
+-osClient: *OsClusterClient
+-recorder: EventRecorder
+-instance: *OpensearchRole
+-cluster: *OpenSearchCluster
+-logger: Logger
++Reconcile(): Result, error
++Delete(): error
+}
+class RollingRestartReconciler {
++: Client
++: ResourceReconciler
+-ctx: Context
+-osClient: *OsClusterClient
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
++Reconcile(): Result, error
+-restartStatefulSetPod(sts *StatefulSet): Result, error
+}
+class ScalerReconciler {
++: Client
++: ResourceReconciler
+-ctx: Context
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
++Reconcile(): Result, error
+-reconcileNodePool(nodePool *NodePool): bool, error
+-increaseOneNode(currentSts StatefulSet, nodePoolGroupName string): bool, error
+-decreaseOneNode(currentStatus ComponentStatus, currentSts StatefulSet, nodePoolGroupName string, smartDecrease bool): bool, error
+-excludeNode(currentStatus ComponentStatus, currentSts StatefulSet, nodePoolGroupName string): error
+-drainNode(currentStatus ComponentStatus, currentSts StatefulSet, nodePoolGroupName string): error
++CreateNodePortServiceIfNotExists(): Service, bool, error
++DeleteNodePortService(service Service)
+-cleanupStatefulSets(result *CombinedResult)
+-removeStatefulSet(sts StatefulSet): *Result, error
+}
+class SecurityconfigReconciler {
++: ResourceReconciler
++: Client
+-ctx: Context
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
+-logger: Logger
++Reconcile(): Result, error
+-determineAdminSecret(): string
++DeleteResources(): Result, error
+-securityconfigSubpaths(instance *OpenSearchCluster, secret *Secret): error
+}
+class TLSReconciler {
++: ResourceReconciler
++: Client
+-ctx: Context
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
+-logger: Logger
+-pki: PKI
+-recorder: EventRecorder
++Reconcile(): Result, error
+-handleTransport(): error
+-handleAdminCertificate(): error
+-handleTransportGenerateGlobal(): error
+-handleTransportGeneratePerNode(): error
+-handleTransportExistingCerts(): error
+-handleHttp(): error
+-providedCaCert(secretName string, namespace string): Cert, error
++DeleteResources(): Result, error
+}
+class UpgradeReconciler {
++: Client
++: ResourceReconciler
+-ctx: Context
+-osClient: *OsClusterClient
+-recorder: EventRecorder
+-reconcilerContext: *ReconcilerContext
+-instance: *OpenSearchCluster
++Reconcile(): Result, error
+-validateUpgrade(): error
+-findWorkingNodePool(): NodePool, ComponentStatus
+-findInProgress(pools []NodePool): NodePool, bool
+-findNextPool(pools []NodePool): NodePool, bool
+-doDataNodeUpgrade(pool NodePool): error
+}
+class UserRoleBindingReconciler {
++: Client
++: ReconcilerOptions
+-ctx: Context
+-osClient: *OsClusterClient
+-recorder: EventRecorder
+-instance: *OpensearchUserRoleBinding
+-cluster: *OpenSearchCluster
+-logger: Logger
++Reconcile(): Result, error
++Delete(): error
+-reconcileExistingMapping(rolename string): error
+-removeUsersFromMapping(rolename string, usersToRemove []string): error
+-calculateRemovedRoles(): []string
+-calculateRemovedUsers(): []string
+}
+class UserReconciler {
++: Client
++: ReconcilerOptions
+-ctx: Context
+-osClient: *OsClusterClient
+-recorder: EventRecorder
+-instance: *OpensearchUser
+-cluster: *OpenSearchCluster
+-logger: Logger
++Reconcile(): Result, error
++Delete(): error
+-fetchPasswordSecret(): string, error
+}
+}
+ClusterReconciler --> ReconcilerContext
+ConfigurationReconciler --> ReconcilerContext
+DashboardsReconciler --> ReconcilerContext
+RoleReconciler --> ReconcilerOptions
+UserRoleBindingReconciler --> ReconcilerOptions
+UserReconciler --> ReconcilerOptions
+RollingRestartReconciler --> ReconcilerContext
+ScalerReconciler --> ReconcilerContext
+SecurityconfigReconciler --> ReconcilerContext
+TLSReconciler --> ReconcilerContext
+UpgradeReconciler --> ReconcilerContext
+
+@enduml
